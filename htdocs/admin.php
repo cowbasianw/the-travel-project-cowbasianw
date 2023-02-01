@@ -13,6 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
     } else {
         session_start();
         $_SESSION["username"] = $username;
-        header("Location: flights.php");
+        header("Location: Browse.php");
     }
 }
