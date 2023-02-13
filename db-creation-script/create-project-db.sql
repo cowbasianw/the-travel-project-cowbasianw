@@ -52,9 +52,10 @@ CREATE TABLE `imagedetails` (
     'Latitude' DOUBLE,
     'Longitude' DOUBLE,
     'CityCode' int(11) NOT NULL ,
-    'CountryCodeISO' varchar(2) DEFAULT NULL,
-    'ContinentCode' varchar(2) DEFAULT NULL,
-
-
-
-)
+    'Path' varchar(2) DEFAULT NULL,
+    'Exif' varchar(2) DEFAULT NULL,
+    'ActualCreator' varchar(256) DEFAULT NULL,
+    'CreatorURL' varchar(256) DEFAULT NULL,
+    'SourceURL' varchar(256) DEFAULT NULL,
+    'Colors' LONGTEXT,
+ ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
