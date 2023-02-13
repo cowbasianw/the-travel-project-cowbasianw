@@ -1,6 +1,7 @@
 <?php
 
-$title = "Login";
+$title = "An completely normal login page";
+
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
     require 'views/admin.view.php';
 } else if ($_SERVER['REQUEST_METHOD'] === "POST") {

@@ -20,12 +20,13 @@ $page_title = "An completely normal login page";
 
                     <input type="text" id="username" name="username" placeholder="Username" value="<?php echo isset($_POST["username"]) ? $_POST["username"] : ""; ?>">
                 </li>
+                <br>
                 <li>
                     <label for="password">Password:</label>
 
                     <input type="password" id="password" name="user_pw">
                 </li>
-
+                <br>
                 <li class="button">
                     <button type="submit">Login</button>
                 </li>
