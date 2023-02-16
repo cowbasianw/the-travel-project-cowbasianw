@@ -14,6 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
     } else {
         session_start();
         $_SESSION["username"] = $username;
-        header("Location: Browse.php");
+        header("Location: browse.php");
     }
 }
