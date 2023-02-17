@@ -1,23 +1,20 @@
 <<?php
+    require 'partials/head.php';
     // for cloudinary_src()
-    require '../helpers/image-helpers.php'
-    ?> <?php require 'partials/head.php'; ?> <div class="inner-container">
-    <h1>Browse</h1>
+    require '../helpers/image-helpers.php' ?> <div class="inner-container">
 
-    <div id="image-table">
+    <div class="inner-container">
+        <h1>Browse</h1>
 
-        <div id="image">
 
-            <img src='<?= cloudinary_src($image['image_path'], 500) ?>' alt=''>
+        <div id="photos">
+            <?php
+            foreach (array_slice($image_rated, 0, 5) as $image_details) : ?>
 
-        </div>>
 
+            <?php endforeach ?>
+
+        </div>
         <?php require 'partials/image-detail.php' ?>
 
-
     </div>
-    </nav>
-
-    </div>
-
-    <?php require 'partials/foot.php'; ?>

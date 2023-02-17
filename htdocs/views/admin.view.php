@@ -1,8 +1,6 @@
 <?php require 'partials/head.php';
 
-$stylesheets = [
-    "admin.css"
-];
+
 
 $page_title = "An completely normal login page";
 

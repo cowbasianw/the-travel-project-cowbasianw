@@ -10,8 +10,7 @@
  * @return string The src to the desired image on Cloudinary.
  */
 
-function cloudinary_src($image_path, $size)
+function cloudinary_src($image_path)
 {
-    return "https://res.cloudinary.com/blunxy/image/upload/c_thumb,g_auto,h_{$size},w_{$size} 
-    v1638743067/3512.202104.final.exam/$image_path.jpg";
+    return "https://res.cloudinary.com/dvp4chsmz/image/upload//c_scale,h_366/v1676498190/3512-2023-01-project-images/$image_path";
 }
