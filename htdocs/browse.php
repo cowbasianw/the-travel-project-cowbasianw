@@ -19,6 +19,13 @@ $user_id = 23;
 
 $image_rated = image_rated($db_helper, $user_id);
 
+foreach ($image_rated as $key => $row) {
+    $image_rating[$key]  = $row['image_rating'];
+}
+
+$image_rating  = array_column($image_rated, 'image_rating');
+
+array_multisort($image_rating, SORT_DESC, $image_rated);
 
 $db_helper->close_connection();
 

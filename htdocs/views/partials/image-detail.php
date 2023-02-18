@@ -2,6 +2,9 @@
 
     <?php
     foreach (array_slice($image_rated, 0, 5) as $image_details) :
+
+
+
     ?>
 
         <div id="image-table">
