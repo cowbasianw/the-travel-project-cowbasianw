@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Returns the country, city, latitude, longitude,  of a picture.
+ * Returns the country, city, latitude, longitude, image path, and image rating of a picture.
  *
  * @param mixed $db_helper
- * @param mixed $image_path
+ * @param mixed $user_id
  * @return mixed An array containing the target image information.
  */
 
