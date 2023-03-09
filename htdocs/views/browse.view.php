@@ -1,12 +1,37 @@
 <?php
 require 'partials/head.php';
 // for cloudinary_src()
-require '../helpers/image-helpers.php'
-?>
-<div class="container">
+require_once '../helpers/image-helpers.php';
 
+?>
+<div class="browse-container">
+    <h1>Browse</h1>
+    <div class="sorting-container">
+        <form method="POST" action="<?= $_SERVER["SCRIPT_NAME"] ?>">
+            <fieldset>
+                <legend>Sorting </legend>
+
+                <input type="radio" id="SORT_DESC" name="Sort_option" value=SORT_DESC_RATING />
+                <label for="SORT_DESC">Descending by Rating</label>
+
+                <input type="radio" id="SORT_ASC" name="Sort_option" value=SORT_ASC_RATING />
+                <label for="SORT_ASC">Ascending by Rating</label>
+                <br />
+                <br />
+                <input type="radio" id="SORT_DESC" name="Sort_option" value=SORT_DESC_CITY />
+                <label for="SORT_DESC">Reverse Alphabetical by City Name</label>
+
+                <input type="radio" id="SORT_ASC" name="Sort_option" value=SORT_ASC_CITY />
+                <label for="SORT_ASC">Alphabetical by City Name</label>
+
+                <input type="submit" name="Sort" value="Sort" />
+            </fieldset>
+
+        </form>
+    </div>
     <div class="inner-container">
-        <h1>Browse</h1>
+
+        <h1>Image Table</h1>
         <?php require 'partials/image-detail.php' ?>
 
     </div>
@@ -15,14 +40,6 @@ require '../helpers/image-helpers.php'
 
             <fieldset>
                 <legend>Filter </legend>
-
-                <input type="radio" id="SORT_DESC" name="Filtered_Order" value="SORT_DESC" checked />
-                <label for="SORT_DESC">Descending order</label><br />
-
-                <input type="radio" id="SORT_ASC" name="Filtered_Order" value="SORT_ASC" />
-                <label for="SORT_ASC">Ascending order</label>
-                <br />
-                <br />
 
                 <label for="Filtered_Rating">Filter by Rating (between 1 and 5):</label>
                 <input type="number" id="Filtered_Rating" name="Filtered_Rating" min="1" max="5" />
@@ -38,12 +55,16 @@ require '../helpers/image-helpers.php'
                 <input type="text" name="Filtered_country" id="Filtered_country" />
                 <br />
                 <br />
+                <input type="submit" name="Filter" value="Filter" />
+
             </fieldset>
-
-            <input type="submit" value="Filter" />
-
         </form>
 
-
     </div>
+    <div class="Logout-container">
+        <form method="POST" action="<?= $_SERVER["SCRIPT_NAME"] ?>">
+            <input type="submit" name="Logout" value="Logout" />
+        </form>
+    </div>
+
 </div>
