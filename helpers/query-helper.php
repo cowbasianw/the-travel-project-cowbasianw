@@ -26,7 +26,7 @@ function image_rated($db_helper, $user_id)
       
     FROM  
       imagedetails 
-      INNER JOIN countries ON (imagedetails.CountryCodeISO =  countries.ISO)
+      INNER JOIN countries ON (imagedetails.CountryCodeISO=  countries.ISO)
       INNER JOIN cities ON (imagedetails.CityCode=  cities.CityCode)
       INNER JOIN imagerating ON (imagedetails.ImageID= imagerating.ImageID)
    WHERE 
@@ -36,18 +36,19 @@ QUERY;
   return $db_helper->run($query, [":user_id" => $user_id])->fetchAll();
 }
 
-function user_checker($db_helper)
+function user_checker($db_helper, $username)
 {
 
   $query = <<<QUERY
     SELECT 
-       admin.UserName as username,
-       admin.Password as password
+       admin.UserName as correctUsername,
+       admin.Password as correctPassword
     FROM  
        admin 
+    where UserName =:username
 
   QUERY;
-  return $db_helper->run($query)->fetchAll();
+  return $db_helper->run($query, [":username" => $username])->fetch();
 }
 function rating_changer($db_helper, $newRating, $Rating_ID)
 {
@@ -71,15 +72,13 @@ function active_ddrop($db_helper)
   $query = <<<QUERY
    SELECT 
       cities.AsciiName as city,
-      countries.CountryName as country
+      countries.CountryName as country,
       imagedetails.Latitude as lat,
-      imagedetails.Longitude as ong,
-      
- 
+      imagedetails.Longitude as ong
     FROM
       imagedetails 
-      INNER JOIN countries ON (imagedetails.CountryCodeISO =  countries.ISO)
-      INNER JOIN cities ON (imagedetails.CityCode=  cities.CityCode)
+      INNER JOIN countries ON (imagedetails.CountryCodeISO= countries.ISO)
+      INNER JOIN cities ON (imagedetails.CityCode= cities.CityCode)
       INNER JOIN imagerating ON (imagedetails.ImageID= imagerating.ImageID)
     WHERE 
       imagerating.Rating  =3
@@ -92,15 +91,16 @@ function search_city_id($db_helper, $city_ID)
 {
   $query = <<<QUERY
   SELECT 
-    cities.AsciiName as city
-  FROM
-    imagedetails 
-      INNER JOIN countries ON (imagedetails.CountryCodeISO =  countries.ISO)
-      INNER JOIN cities ON (imagedetails.CityCode=  cities.CityCode)
-      INNER JOIN imagerating ON (imagedetails.ImageID= imagerating.ImageID)
-    WHERE 
-      imagerating.Rating  =3
-      cities.CityCode =:city_ID
+  imagerating.Rating as active 
+   FROM
+  imagedetails 
+  INNER JOIN countries ON (imagedetails.CountryCodeISO =  countries.ISO)
+  INNER JOIN cities ON (imagedetails.CityCode=  cities.CityCode)
+  INNER JOIN imagerating ON (imagedetails.ImageID= imagerating.ImageID)
+  WHERE 
+  cities.CityCode =:city_ID AND
+  imagerating.Rating =3
+      
   QUERY;
-  return $db_helper->run($query, [":city_ID" => $city_ID])->fetch();
+  return $db_helper->run($query, [":city_ID" => $city_ID])->fetchAll();
 }

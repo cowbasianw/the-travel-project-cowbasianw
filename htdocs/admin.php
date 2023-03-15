@@ -2,8 +2,6 @@
 
 $title = "An completely normal login page";
 
-
-
 require '../database/DatabaseHelper.php';
 
 $config = require '../database/config.php';
@@ -12,11 +10,7 @@ $db_helper = new DatabaseHelper($config);
 
 require '../helpers/query-helper.php';
 
-$vaildation_checker = user_checker($db_helper);
-
-
-
-$error_message = " ";
+$error_message = "";
 
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
 
@@ -29,17 +23,24 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         'cost' => 12,
     ];
 
-    foreach ($vaildation_checker as $checker) {
-        $correct_username = $checker['username'];
-        $correct_password = $checker['password'];
+    $vaildation_checker = user_checker($db_helper, $username);
 
-        $hash = password_hash($correct_password, PASSWORD_BCRYPT, $options);
 
-        if ($username = $correct_username && password_verify($password, $hash)) {
 
+    if ($vaildation_checker) {
+
+        $correct_password = $vaildation_checker['correctPassword'];
+
+        if (password_verify($password, $correct_password)) {
             session_start();
             $_SESSION["username"] = $username;
             header("Location: browse.php");
+        } else {
+            $error_message = "Incorrect password.";
+            require 'views/admin.view.php';
         }
+    } else {
+        $error_message = "Incorrect username or password.";
+        require 'views/admin.view.php';
     }
 }

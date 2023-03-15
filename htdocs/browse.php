@@ -17,9 +17,7 @@ $db_helper = new DatabaseHelper($config);
 require '../helpers/query-helper.php';
 require '../helpers/browser-helper.php';
 
-
 $user_id = 23;
-
 $image_rated = image_rated($db_helper, $user_id);
 
 foreach ($image_rated as $key => $row) {
@@ -27,17 +25,12 @@ foreach ($image_rated as $key => $row) {
     $city_name[$key] = $row['city_name'];
 }
 $city_name  = array_column($image_rated, 'city_name');
-
 $image_rating  = array_column($image_rated, 'image_rating');
-
-
 
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
 
     if (isset($_COOKIE['order'])) {
         $changed_variable = $_COOKIE['order'];
-
-        var_dump($changed_variable);
 
         if ($changed_variable === 'SORT_DESC_RATING') {
             $sort_order = SORT_DESC;
@@ -52,10 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
             $sort_order = SORT_ASC;
             $sort_item = $city_name;
         }
-
         array_multisort($sort_item, $sort_order,  $image_rated);
     }
-
     require 'views/browse.view.php';
 } else if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
@@ -83,18 +74,15 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
                 $sort_item = $city_name;
             }
         }
-
         $save_item = $_POST['Sort_option'];
 
         array_multisort($sort_item, $sort_order,  $image_rated);
-
         setcookie("order", $save_item, time() + 86400);
         require 'views/browse.view.php';
     }
 
     if (isset($_POST['Change'])) {
         $image_rating_ID = $_POST['rating_id'];
-
         $new_Rating = $_POST['Change_Rating'];
 
         rating_changer($db_helper, $new_Rating, $image_rating_ID);
@@ -105,40 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         $city = trim($_POST['Filtered_city']);
         $Rating = trim($_POST['Filtered_Rating']);
         $country = trim($_POST['Filtered_country']);
-        if (!(empty($Rating))) {
-            $image_rated = array_filter($image_rated, function ($item) use ($Rating) {
-                if ((stripos($item['image_rating'], $Rating)) !== false) {
-                    return true;
-                }
-                return false;
-            });
-        }
-        if (!(empty($country)) && !(empty($city))) {
 
-            $image_rated = array_filter($image_rated, function ($item) use ($country, $city) {
-                if ((stripos($item['country_name'], $country) &&
-                    (stripos($item['city_name'], $city))) !== false) {
-                    return true;
-                }
-                return false;
-            });
-        } else if (!(empty($country)) && empty($city)) {
-
-            $image_rated = array_filter($image_rated, function ($item) use ($country) {
-                if ((stripos($item['country_name'], $country)) !== false) {
-                    return true;
-                }
-                return false;
-            });
-        } else if (empty($country) && !(empty($city))) {
-
-            $image_rated = array_filter($image_rated, function ($item) use ($city) {
-                if ((stripos($item['city_name'], $city)) !== false) {
-                    return true;
-                }
-                return false;
-            });
-        }
+        filter($image_rated, $city, $country, $Rating);
         require 'views/browse.view.php';
     }
 }

@@ -163,7 +163,7 @@ PRIMARY KEY (`UserID`)
 --
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES (1, 'admin', 'admin'), (2, 'warhammer', '40k');
+INSERT INTO `admin` VALUES (1, 'admin', '$2y$12$tx94cBEm.4e43ELwCewRBeklZNFQnm0.OZtBA3EqafClaAcVVzidq'), (2, 'warhammer', '$2y$12$6jQBvhGY.2TSv7ORIbXhceHpxrsULuScAaeiD3PipElafX37fblK6'), (3, 'cowbasianw', '$2y$12$ETEuyJBdK7WxmWC9unhdquHL0X36otjldl1NB399a/R2M0HIKRDEm');
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
