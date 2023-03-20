@@ -4,7 +4,7 @@ require '../../database/DatabaseHelper.php';
 $config = require '../../database/config.php';
 $db_helper = new DatabaseHelper($config);
 require '../../helpers/query-helper.php';
-
+$deddrop = html_helper($db_helper);
 
 if (isset($_GET['city'])) {
 
@@ -14,8 +14,6 @@ if (isset($_GET['city'])) {
 
         "drops" => count($listOfCity)
     ];
-
-    $resp = json_encode($refined_array);
 } else {
     $Active_DDrop = active_ddrop($db_helper);
     $totalCount = count($Active_DDrop);
@@ -25,9 +23,8 @@ if (isset($_GET['city'])) {
             "total-count" => $totalCount,
             "drops" => $Active_DDrop
         ];
-    $resp = json_encode($refined_array);
 }
-
+$resp = json_encode($deddrop);
 header("http://127.0.0.1:8080/api/ddrop.php");
 
 header("Content-Type: application/json");
