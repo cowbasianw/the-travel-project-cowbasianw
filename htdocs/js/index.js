@@ -41,6 +41,24 @@ filterBox.addEventListener('input', () => {
     });
 });
 
+function languageRetriver(code) {
+
+}
+
+function neighborRetriver(Neighbours) {
+    const listOfNeughbours = Neighbours.split(',');
+    const namesOfNeighbours = [];
+
+    for (let isoCode of listOfNeughbours) {
+        const countryObj = countries.find(country => country.ISO === isoCode);
+        if (countryObj) {
+            namesOfNeighbours.push(countryObj.CountryName);
+        }
+    }
+    const countryString = namesOfNeighbours.join(', ');
+    return countryString;
+}
+
 countriesList.addEventListener('click', event => {
     if (event.target.matches('.country')) {
         const selectedItem = event.target.textContent;
