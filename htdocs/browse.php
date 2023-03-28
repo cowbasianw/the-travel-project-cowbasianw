@@ -94,7 +94,41 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         $Rating = trim($_POST['Filtered_Rating']);
         $country = trim($_POST['Filtered_country']);
 
-        filter($image_rated, $city, $country, $Rating);
+        if (!(empty($Rating))) {
+            $image_rated = array_filter($image_rated, function ($item) use ($Rating) {
+                if ((stripos($item['image_rating'], $Rating)) !== false) {
+                    return true;
+                }
+                return false;
+            });
+        }
+        if (!(empty($country)) && !(empty($city))) {
+
+            $image_rated = array_filter($image_rated, function ($item) use ($country, $city) {
+                if ((stripos($item['country_name'], $country) &&
+                    (stripos($item['city_name'], $city))) !== false) {
+                    return true;
+                }
+                return false;
+            });
+        } else if (!(empty($country)) && empty($city)) {
+
+            $image_rated = array_filter($image_rated, function ($item) use ($country) {
+                if ((stripos($item['country_name'], $country)) !== false) {
+                    return true;
+                }
+                return false;
+            });
+        } else if (empty($country) && !(empty($city))) {
+
+            $image_rated = array_filter($image_rated, function ($item) use ($city) {
+                if ((stripos($item['city_name'], $city)) !== false) {
+                    return true;
+                }
+                return false;
+            });
+        }
+
         require 'views/browse.view.php';
     }
 }

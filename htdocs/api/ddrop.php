@@ -5,6 +5,7 @@ $config = require '../../database/config.php';
 $db_helper = new DatabaseHelper($config);
 require '../../helpers/query-helper.php';
 $deddrop = html_helper($db_helper);
+$ll = cityRetiver($db_helper);
 
 if (isset($_GET['city'])) {
 
@@ -24,7 +25,7 @@ if (isset($_GET['city'])) {
             "drops" => $Active_DDrop
         ];
 }
-$resp = json_encode($deddrop);
+$resp = json_encode($ll);
 header("http://127.0.0.1:8080/api/ddrop.php");
 
 header("Content-Type: application/json");
