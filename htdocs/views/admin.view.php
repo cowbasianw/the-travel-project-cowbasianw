@@ -1,7 +1,5 @@
 <?php require 'partials/head.php';
 
-
-
 $page_title = "An completely normal login page";
 
 ?>

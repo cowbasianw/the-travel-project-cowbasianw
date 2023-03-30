@@ -19,3 +19,7 @@ added filter to browse.
 2022-03-15 
 
 completed all the php requirement of the project. Still need to adjust CSS tho.
+
+2022-03-22
+
+started on JavaScript portion of the project currently developing the default public view page.
