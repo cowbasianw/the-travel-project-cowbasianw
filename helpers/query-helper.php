@@ -31,6 +31,8 @@ function image_rated($db_helper, $user_id)
       INNER JOIN imagerating ON (imagedetails.ImageID= imagerating.ImageID)
    WHERE 
       imagerating.UserID =:user_id
+   ORDER BY 
+      countries.CountryName ASC
 QUERY;
 
   return $db_helper->run($query, [":user_id" => $user_id])->fetchAll();

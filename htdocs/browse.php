@@ -19,7 +19,7 @@ require '../helpers/browser-helper.php';
 
 $user_id = 23;
 $image_rated = image_rated($db_helper, $user_id);
-
+//generating items image rating anf city name for later use.
 foreach ($image_rated as $key => $row) {
     $image_rating[$key]  = $row['image_rating'];
     $city_name[$key] = $row['city_name'];
@@ -28,7 +28,7 @@ $city_name  = array_column($image_rated, 'city_name');
 $image_rating  = array_column($image_rated, 'image_rating');
 
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
-
+    //cookies to remeber user actions
     if (isset($_COOKIE['order'])) {
         $changed_variable = $_COOKIE['order'];
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
     }
     require 'views/browse.view.php';
 } else if ($_SERVER['REQUEST_METHOD'] === "POST") {
-
+    //logout function
     if (isset($_POST['Logout'])) {
 
         unset($_SESSION["username"]);
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         //redirect to login page
         header("location: admin.php");
     }
-
+    //sort function
     if (isset($_POST['Sort'])) {
         if (!empty($_POST['Sort_option'])) {
             if ($_POST['Sort_option'] === 'SORT_DESC_RATING') {
@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         setcookie("order", $save_item, time() + 86400);
         require 'views/browse.view.php';
     }
-
+    //changing rate function
     if (isset($_POST['Change'])) {
         $image_rating_ID = $_POST['rating_id'];
         $new_Rating = $_POST['Change_Rating'];
@@ -88,7 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         rating_changer($db_helper, $new_Rating, $image_rating_ID);
         require 'views/browse.view.php';
     }
-
+    /* 
+The filter method is coded with the aid of www.php.net on the maunal of array_filter. 
+https://www.php.net/manual/en/function.array-filter.php
+*/
     if (isset($_POST['Filter'])) {
         $city = trim($_POST['Filtered_city']);
         $Rating = trim($_POST['Filtered_Rating']);
@@ -129,7 +132,11 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
             });
         }
 
-        require 'views/browse.view.php';
+        if (empty($image_rated)) {
+            echo "No results found.";
+        } else {
+            require 'views/browse.view.php';
+        }
     }
 }
 $db_helper->close_connection();

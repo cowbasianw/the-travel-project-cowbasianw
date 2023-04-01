@@ -4,36 +4,35 @@ require 'partials/head.php';
 require_once '../helpers/image-helpers.php';
 
 ?>
+
+
 <div class="browse-container">
     <h1>Browse</h1>
     <div class="sorting-container">
-        <form method="POST" action="<?= $_SERVER["SCRIPT_NAME"] ?>">
+        <form method="POST" action="/browse.php">
             <fieldset>
                 <legend>Sorting </legend>
+                <input type="radio" id="SORT_DESC_RATING" name="Sort_option" value="SORT_DESC_RATING" />
+                <label for="SORT_DESC_RATING">Descending by Rating</label>
 
-                <input type="radio" id="SORT_DESC" name="Sort_option" value=SORT_DESC_RATING />
-                <label for="SORT_DESC">Descending by Rating</label>
-
-                <input type="radio" id="SORT_ASC" name="Sort_option" value=SORT_ASC_RATING />
-                <label for="SORT_ASC">Ascending by Rating</label>
+                <input type="radio" id="SORT_ASC_RATING" name="Sort_option" value="SORT_ASC_RATING" />
+                <label for="SORT_ASC_RATING">Ascending by Rating</label>
                 <br />
                 <br />
-                <input type="radio" id="SORT_DESC" name="Sort_option" value=SORT_DESC_CITY />
-                <label for="SORT_DESC">Reverse Alphabetical by City Name</label>
 
-                <input type="radio" id="SORT_ASC" name="Sort_option" value=SORT_ASC_CITY />
-                <label for="SORT_ASC">Alphabetical by City Name</label>
+                <input type="radio" id="SORT_DESC_CITY" name="Sort_option" value="SORT_DESC_CITY" />
+                <label for="SORT_DESC_CITY">Reverse Alphabetical by City Name</label>
+
+                <input type="radio" id="SORT_ASC_CITY" name="Sort_option" value="SORT_ASC_CITY" />
+                <label for="SORT_ASC_CITY">Alphabetical by City Name</label>
 
                 <input type="submit" name="Sort" value="Sort" />
             </fieldset>
-
         </form>
     </div>
+    <h1>Image Table</h1>
     <div class="inner-container">
-
-        <h1>Image Table</h1>
         <?php require 'partials/image-detail.php' ?>
-
     </div>
     <div class="filter-container">
         <form method="POST" action="<?= $_SERVER["SCRIPT_NAME"] ?>">
@@ -66,5 +65,4 @@ require_once '../helpers/image-helpers.php';
             <input type="submit" name="Logout" value="Logout" />
         </form>
     </div>
-
 </div>
