@@ -29,9 +29,12 @@ async function fetchData() {
     let countryNames = countries.map(country => country.CountryName);
     let countryISOs = countries.map(country => country.ISO);
     let cityName = cityData.map(city => city.cityName);
+    let imagePaths = imageData.map(img => img.image_path);
+    localStorage.setItem("imagePaths", JSON.stringify(imagePaths));
     localStorage.setItem("countriesNames", JSON.stringify(countryNames));
     localStorage.setItem("countriesISO", JSON.stringify(countryISOs));
     localStorage.setItem("cityNames", JSON.stringify(cityName));
+    localStorage.setItem("languagesDetails", JSON.stringify(languagesDetail));
     //creating body.
     let body = document.querySelector("body");
     body.style.backgroundColor = "antiquewhite";
@@ -49,17 +52,26 @@ async function fetchData() {
     countryListingTitle.textContent = "Country Listing";
     countryListingTitle.style.textAlign = "center";
     countriesList.append(countryListingTitle);
-    //search function
-    const label = document.createElement("label");
-    label.textContent = "Filter by Country:";
-    label.style.display = "flex";
-    countriesList.appendChild(label);
+    //search/filter function
+    let checkbox = document.createElement("input");
+    checkbox.setAttribute("type", "checkbox");
+    checkbox.setAttribute("name", "Countries That contains images");
+    checkbox.setAttribute("value", "true");
+    const labelforSearch = document.createElement("label");
+    const labelforBox = document.createElement("label");
+    labelforSearch.textContent = "Filter by Country:";
+    labelforSearch.style.display = "flex";
+    labelforBox.textContent = "Countries That contains images";
+    labelforBox.style.display = "flex";
+    countriesList.appendChild(labelforSearch);
     let filterBox = document.createElement("INPUT");
     filterBox.setAttribute("type", "text");
-    filterBox.style.display = "flex";
+    filterBox.style.display = "block";
     filterBox.style.alignItems = "center";
     filterBox.style.justifyContent = "center";
     countriesList.append(filterBox);
+    countriesList.appendChild(labelforBox);
+    countriesList.appendChild(checkbox);
     //create the list of countries
     let countriesNames = JSON.parse(localStorage.getItem("countriesNames"));
     let countriesISO = JSON.parse(localStorage.getItem("countriesISO"));
@@ -67,18 +79,54 @@ async function fetchData() {
     countriesList.appendChild(countriesBoxs);
     body.append(countriesList);
     let listItems = document.querySelectorAll('.country');
-    // erase non searched countries. 
+    // erase non searched countries, checks if the checkbox is checked inside the filterBox event listener.
     filterBox.addEventListener('input', () => {
         const filterTerm = filterBox.value.toLowerCase();
         listItems.forEach(item => {
             const text = item.textContent.toLowerCase();
             if (text.startsWith(filterTerm)) {
-                item.style.display = 'inline-block';
+                if (checkbox.checked) {
+                    const imageCountry = imageData.some(imagelist => imagelist.country_name.toLowerCase() === text);
+                    if (imageCountry) {
+                        item.style.display = 'inline-block';
+                        console.log(filterBox.value.toLowerCase());
+                    } else {
+                        item.style.display = 'none';
+                    }
+                } else {
+                    item.style.display = 'inline-block';
+                }
             } else {
                 item.style.display = 'none';
             }
         });
     });
+    checkbox.addEventListener('change', (event) => {
+        if (event.target.checked) {
+            listItems.forEach(item => {
+                const text = item.textContent;
+                if (imageData.some(image => image.country_name === text)) {
+                    if (filterBox.value === '' || item.textContent.toLowerCase().startsWith(filterBox.value.toLowerCase())) {
+                        item.style.display = 'inline-block';
+                        console.log(filterBox.value.toLowerCase());
+                    } else {
+                        item.style.display = 'none';
+                    }
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        } else {
+            listItems.forEach(item => {
+                if (filterBox.value === '' || item.textContent.toLowerCase().startsWith(filterBox.value.toLowerCase())) {
+                    item.style.display = 'inline-block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    });
+
     //mouse pointer 
     listItems.forEach(function (item) {
         item.addEventListener("mouseover", function () {
@@ -97,9 +145,7 @@ async function fetchData() {
             if (oldDetail) {
                 oldDetail.remove();
             }
-
             countryBox.appendChild(detailsBox);
-
             //create country details.
             let countryDetail = document.createElement("div");
             //use method
@@ -109,7 +155,8 @@ async function fetchData() {
             //create img lists
             let imageBox = document.createElement("div");
             //use method 
-            let imagelists = generateImage(selectedItem, "");
+
+            let imagelists = generateImage(selectedItem);
 
             imageBox.id = "imageBox";
             imageBox.append(imagelists);
@@ -119,6 +166,7 @@ async function fetchData() {
             let cityList = document.createElement("div");
             cityList.id = "cityList";
             //use method
+            let cityName = JSON.parse(localStorage.getItem("cityName"));
             let cities = listOfCities(selectedItem, countries);
             cityList.appendChild(cityListTitle);
             cityList.append(cities);
@@ -148,19 +196,19 @@ async function fetchData() {
                         detailsBox.replaceChild(cityDetail, countryDetail);
                     }
                     //filter city images
-                    let cityImages = generateImage("", selectedItem);
+                    let cityImages = generateImage(selectedItem);
                     //erase old images
                     imageBox.replaceChild(cityImages, imageBox.firstChild);
 
                 }
             });
+            // event handler for the image box clicking
             imageBox.addEventListener('click', event => {
-                const selectedItem = event.currentTarget.querySelector('.image');
-                if (selectedItem) {
+
+                if (event.target.matches('img')) {
+                    const selectedItem = event.target.parentNode;
                     title.textContent = "The Single Photo View";
                     countriesList.style.display = "none";
-
-                    console.log(selectedItem);
 
                     let singleImageBox = singlePhotoDisplay(selectedItem);
                     let returnButton = document.createElement("button");
@@ -176,10 +224,8 @@ async function fetchData() {
                     });
                 }
             });
-
         }
     });
-
     //function used to create a list of country. 
     function generateCountryList(countriesNames, countriesISO) {
 
@@ -196,14 +242,12 @@ async function fetchData() {
             CountryBoxs.dataset.code = countriesISO[i];
             countriesList.appendChild(CountryBoxs);
         }
-
         return countriesList;
     }
     //function used to generate details in a country.
     function generateCountryInfo(selectedCountry, countries) {
 
         let detailsBox = document.createElement("div");
-
         for (let list of countries) {
             if (selectedCountry === list.CountryName) {
                 let name = document.createElement("h2");
@@ -263,6 +307,7 @@ async function fetchData() {
     }
     //function used to display full language name. 
     function languageRetriver(language, countries) {
+        let languagesDetails = JSON.parse(localStorage.getItem("languagesDetails"));
         if (language === null) {
             return "No language Information avaliable."
         }
@@ -271,9 +316,7 @@ async function fetchData() {
             const fullNamesOfLanguages = [];
             for (let langCode of listOfLanguages) {
                 const [hyphen, region] = langCode.split('-');
-
-                for (let dataList of languagesDetail) {
-
+                for (let dataList of languagesDetails) {
                     if (dataList.languagesCode === hyphen) {
                         const fullName = dataList.languagesName;
                         if (region) {
@@ -320,7 +363,8 @@ async function fetchData() {
         const list = [];
         const countryObj = countries.find(country => country.CountryName === countryName);
         const ISOCode = countryObj.ISO;
-        for (let city of cityData) {
+        let sortedCityList = cityData.sort((a, b) => a.cityName.localeCompare(b.cityName));
+        for (let city of sortedCityList) {
             if (ISOCode.includes(city.countryLocation)) {
                 list.push(city.cityName);
             }
@@ -340,57 +384,125 @@ async function fetchData() {
             cityName.style.borderRadius = "20px 10px 10px 20px";
             cityList.appendChild(cityName);
         }
+
         return cityList;
     }
-    //functions used to generate images.
-    function generateCountryImage() {
+    //function used to adjust the big pic 
+    function adjustOneImageSize(image) {
+        console.log('Adjusting the single view image sizes...');
+        if (image.dataset.code) {
+            let imagePath = image.dataset.code;
+            let oldImages = image.querySelector('img');
+            let height = 600;
+            let weight = 600;
+            if (window.innerWidth < 376) {
+                height = 280;
+                weight = 260;
+            } else if (window.innerWidth < 768) {
+                height = 480;
+                weight = 460;
+            } else if (window.innerWidth < 992) {
+                height = 600;
+                weight = 600;
+            } else if (window.innerWidth < 1200) {
+                height = 860;
+                weight = 840;
+            }
+            let adjustedImg = document.createElement("img");
+            adjustedImg.src = `https://res.cloudinary.com/dvp4chsmz/image/upload//c_scale,h_${height},w_${weight}/v1676498190/3512-2023-01-project-images/${imagePath}`;
+            image.replaceChild(adjustedImg, oldImages); // Replace existing images with updated ones
+        }
+    }
+    //functions used to adjust images.
+    function adjustImageSizes(images) {
+        console.log('Adjusting the list of images sizes...');
+        for (let img of images) {
+            if (img.dataset.code) {
+                let imagePath = img.dataset.code;
+                let oldImages = img.querySelector('img');
+                let height = 160;
+                let weight = 120;
+                if (window.innerWidth < 376) {
+                    height = 80;
+                    weight = 60;
+                } else if (window.innerWidth < 768) {
+                    height = 120;
+                    weight = 100;
+                } else if (window.innerWidth < 992) {
+                    height = 140;
+                    weight = 100;
+                } else if (window.innerWidth < 1200) {
+                    height = 160;
+                    weight = 120;
+                }
+                let adjustedImg = document.createElement("img");
+                adjustedImg.src = `https://res.cloudinary.com/dvp4chsmz/image/upload//c_scale,h_${height},w_${weight}/v1676498190/3512-2023-01-project-images/${imagePath}`;
+                img.replaceChild(adjustedImg, oldImages); // Replace existing images with updated ones
+            }
+        }
+
 
     }
 
-    function generateImage(country, city) {
+    window.addEventListener('resize', function () {
+        let images = document.querySelectorAll('.image');
+        let theImage = document.querySelector('#singleViewBox');
+        adjustImageSizes(images);
+        adjustOneImageSize(theImage);
+    });
+
+    function generateImage(selectedItem) {
 
         const displayBox = document.createElement("div");
-        if (city) {
-            for (let list of imageData) {
-                if (city === list.city_name) {
-                    let imageBox = document.createElement("div");
-                    imageBox.classList.add("image");
-                    let img = document.createElement("img");
-                    img.src = `https://res.cloudinary.com/dvp4chsmz/image/upload//c_scale,h_200,w_160/v1676498190/3512-2023-01-project-images/${list.image_path}`;
-                    img.style.display = "inline-block";
-                    img.style.margin = "10px 10px ";
-                    img.style.padding = "20px";
-                    img.style.borderRadius = "20px 20px 20px 20px";
-                    imageBox.append(img);
-                    imageBox.dataset.code = list.image_path;
-                    imageBox.style.display = "inline-block";
-                    displayBox.appendChild(imageBox);
-                }
+        const displayedImages = []; // array to store image paths that have already been displayed
 
+        for (let list of imageData) {
+            if ((selectedItem === list.country_name || selectedItem === list.city_name) && !displayedImages.includes(list.image_path)) {
+                let imageBox = document.createElement("div");
+                imageBox.classList.add("image");
+                let img = document.createElement("img");
+                img.src = `https://res.cloudinary.com/dvp4chsmz/image/upload//c_scale,h_200,w_160/v1676498190/3512-2023-01-project-images/${list.image_path}`;
+                img.style.display = "inline-block";
+                img.style.margin = "10px 10px ";
+                img.style.padding = "20px";
+                img.style.borderRadius = "20px 20px 20px 20px";
+                imageBox.appendChild(img);
+                imageBox.dataset.code = list.image_path;
+                imageBox.style.display = "inline-block";
+
+                displayedImages.push(list.image_path); // add image path to displayed images
+                //create overley
+                let overlay = document.createElement("div");
+                overlay.classList.add("overlay");
+                let numOfRating3 = 0;
+                for (let item of imageData) {
+                    if (item.image_path === imageBox.dataset.code) {
+                        numOfRating3++;
+                    }
+                }
+                overlay.textContent = `Numbers of Ratings 3: ${numOfRating3}`;
+
+                imageBox.appendChild(overlay);
+                displayBox.appendChild(imageBox);
             }
         }
-        else {
-            for (let list of imageData) {
-                if (country === list.country_name) {
-                    let imageBox = document.createElement("div");
-                    imageBox.classList.add("image");
-                    let img = document.createElement("img");
-                    img.src = `https://res.cloudinary.com/dvp4chsmz/image/upload//c_scale,h_200,w_160/v1676498190/3512-2023-01-project-images/${list.image_path}`;
-                    img.style.display = "inline-block";
-                    img.style.margin = "10px 10px ";
-                    img.style.padding = "20px";
-                    img.style.borderRadius = "20px 20px 20px 20px";
-                    imageBox.append(img);
-                    imageBox.dataset.code = list.image_path;
-                    imageBox.style.display = "inline-block";
-                    displayBox.appendChild(imageBox);
-
-                }
-
-            }
-        }
+        let images = document.querySelectorAll('.image');
+        adjustImageSizes(images);
         if (displayBox.childElementCount === 0) {
             displayBox.textContent = "No photo Taken at this Location."
+        } else {
+            const overlays = displayBox.querySelectorAll(".overlay");
+            overlays.forEach(overlay => {
+                // add CSS styles to the overlay element
+
+                overlay.style.bottom = "0";
+                overlay.style.left = "0";
+
+                overlay.style.background = "rgba(0, 0, 0, 0.6)";
+                overlay.style.color = "#fff";
+                overlay.style.padding = "10px";
+                overlay.style.fontSize = "14px";
+            });
         }
         return displayBox;
     }
@@ -400,46 +512,56 @@ async function fetchData() {
         let img = document.createElement("img");
         img.src = `https://res.cloudinary.com/dvp4chsmz/image/upload//c_scale,h_600,w_600/v1676498190/3512-2023-01-project-images/${imagePath}`;
         let imageBox = document.createElement("div");
+        imageBox.dataset.code = imagePath;
+        imageBox.id = 'singleViewBox';
+        let title = document.createElement("h1");
+        let lat = document.createElement("h4");
+        let long = document.createElement("h4");
+        let country = document.createElement("h4");
+        let city = document.createElement("h4");
+        let description = document.createElement("p");
+        const userName = [];
+        const ratings = [];
+        let userNameElement = document.createElement("h4");
+
 
         for (let list of imageData) {
             if (list.image_path === imagePath) {
-
-                let title = document.createElement("h1");
                 title.textContent = list.title;
-                let lat = document.createElement("h4");
                 lat.textContent = `latitude: ${list.image_latitude}`
-                let long = document.createElement("h4");
                 long.textContent = `longitude: ${list.image_longitude}`;
-                let country = document.createElement("h4");
                 country.textContent = `country: ${list.country_name}`;
-                let city = document.createElement("h4");
                 city.textContent = `city: ${list.city_name}`;
-                let description = document.createElement("p");
                 description.textContent = list.description;
-                let userName = document.createElement("h4");
-                userName.textContent = `Username: ${list.firstName}, ${list.lastName}`;
-                imageBox.appendChild(title);
-                imageBox.appendChild(userName);
-                imageBox.appendChild(lat);
-                imageBox.appendChild(long);
-                imageBox.appendChild(img);
-                imageBox.appendChild(description);
-                imageBox.appendChild(country);
-                imageBox.appendChild(city);
-                imageBox.style.backgroundColor = "lightblue"
-                imageBox.style.margin = "10px 10px ";
-                imageBox.style.padding = "20px";
-                imageBox.style.borderRadius = "20px 20px 20px 20px";
+                ratings.push(list.rating);
+                userName.push(` Image Rating: ${list.rating}, Rated By User: ${list.firstName} ${list.lastName} `);
 
             }
+
+            userName.sort((a, b) => {
+                const ratingA = parseInt(a.match(/Image Rating: (\d+)/)[1]);
+                const ratingB = parseInt(b.match(/Image Rating: (\d+)/)[1]);
+                return ratingB - ratingA;
+            });
+
+            userNameElement.textContent = `Rating list: ${userName}`;
+            imageBox.appendChild(title);
+            imageBox.appendChild(userNameElement);
+            imageBox.appendChild(lat);
+            imageBox.appendChild(long);
+            imageBox.appendChild(img);
+            imageBox.appendChild(description);
+            imageBox.appendChild(country);
+            imageBox.appendChild(city);
+            imageBox.style.backgroundColor = "lightblue"
+            imageBox.style.margin = "10px 10px ";
+            imageBox.style.padding = "20px";
+            imageBox.style.borderRadius = "20px 20px 20px 20px";
         }
-
-
+        adjustOneImageSize(imageBox);
         return imageBox;
-
     }
 }
-
 fetchData();
 
 

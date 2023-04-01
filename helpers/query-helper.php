@@ -171,7 +171,8 @@ SELECT
   cities.AsciiName as city_name,
   imagedetails.description as description,
   users.FirstName as firstName,
-  users.LastName as lastName
+  users.LastName as lastName,
+  imagerating.rating as rating
       
 FROM
   imagedetails 
@@ -179,8 +180,7 @@ FROM
   INNER JOIN cities ON (imagedetails.CityCode=  cities.CityCode)
   INNER JOIN imagerating ON (imagedetails.ImageID= imagerating.ImageID)
   INNER JOIN users ON (imagerating.UserID= users.UserID)
-WHERE 
-    imagerating.Rating  =3
+
 QUERY;
   return $db_helper->run($query)->fetchAll();
 }
