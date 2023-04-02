@@ -5,7 +5,6 @@ if (!isset($_SESSION["username"])) {
     header("location: admin.php");
 }
 
-
 $page_title = "Browser page";
 
 require '../database/DatabaseHelper.php';
@@ -45,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
             $sort_order = SORT_ASC;
             $sort_item = $city_name;
         }
+        //using array multi sort to sort the desired item. 
         array_multisort($sort_item, $sort_order,  $image_rated);
     }
     require 'views/browse.view.php';

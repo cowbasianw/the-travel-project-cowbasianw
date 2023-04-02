@@ -22,16 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
     $options = [
         'cost' => 12,
     ];
-
+    //password checker.
     $vaildation_checker = user_checker($db_helper, $username);
-
-
 
     if ($vaildation_checker) {
 
         $correct_password = $vaildation_checker['correctPassword'];
 
         if (password_verify($password, $correct_password)) {
+            //create session for login.
             session_start();
             $_SESSION["username"] = $username;
             header("Location: browse.php");
